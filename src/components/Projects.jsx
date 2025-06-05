@@ -3,7 +3,7 @@ import { useState, useRef } from 'react';
 import { useInView } from 'framer-motion';
 import { FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
 
-const ProjectCard = ({ project, index }) => {
+export const ProjectCard = ({ project, index }) => {
   const [isHovered, setIsHovered] = useState(false);
   
   return (
