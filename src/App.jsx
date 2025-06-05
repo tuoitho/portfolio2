@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { scrollToSection } from './utils/scrollUtils';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import NavigationTabs from './components/NavigationTabs';
@@ -18,135 +19,107 @@ import {
 } from './data/mockData';
 
 function App() {
-  const [activeTab, setActiveTab] = useState('about');
+  const [currentTab, setCurrentTab] = useState('about');
+  const [direction, setDirection] = useState(0);
+  const tabs = ['about', 'skills', 'projects', 'contact'];
 
-  const renderTabContent = () => {
-    const contentVariants = {
-      enter: {
-        opacity: 0,
-        y: 20,
-      },
-      center: {
-        opacity: 1,
-        y: 0,
-      },
-      exit: {
-        opacity: 0,
-        y: -20,
+  const contentVariants = {
+    enter: (direction) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.6,
+        ease: [0.4, 0, 0.2, 1]
       }
-    };
+    },
+    exit: (direction) => ({
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0,
+      transition: {
+        duration: 0.6,
+        ease: [0.4, 0, 0.2, 1]
+      }
+    })
+  };
 
-    const transition = {
-      type: "tween",
-      ease: "easeInOut",
-      duration: 0.3
-    };
-
-    switch (activeTab) {
-      case 'about':
-        return (
-          <motion.div
-            key="about"
-            variants={contentVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={transition}
-          >
-            <PaginatedAbout aboutData={mockAboutData} />
-          </motion.div>
-        );
-      
-      case 'projects':
-        return (
-          <motion.div
-            key="projects"
-            variants={contentVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={transition}
-          >
-            <div className="min-h-screen bg-gray-50 py-20">
-              <div className="container mx-auto px-4">
-                <div className="text-center mb-12">
-                  <motion.h2
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-4xl font-bold text-gray-900 mb-4"
-                  >
-                    Dự án của tôi
-                  </motion.h2>
-                  <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="text-xl text-gray-600 max-w-2xl mx-auto"
-                  >
-                    Khám phá các dự án tôi đã thực hiện với nhiều công nghệ hiện đại
-                  </motion.p>
-                </div>
-
-                <PaginatedContent
-                  items={mockProjects}
-                  itemsPerPage={6}
-                  gridCols="grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-                  renderItem={(project, index) => (
-                    <ProjectCard project={project} index={index} />
-                  )}
-                />
-              </div>
-            </div>
-          </motion.div>
-        );
-      
-      case 'skills':
-        return (
-          <motion.div
-            key="skills"
-            variants={contentVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={transition}
-          >
-            <PaginatedSkills skills={mockSkills} />
-          </motion.div>
-        );
-      
-      case 'contact':
-        return (
-          <motion.div
-            key="contact"
-            variants={contentVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={transition}
-          >
-            <PaginatedContact contactInfo={mockContactInfo} />
-          </motion.div>
-        );
-      
-      default:
-        return null;
-    }
+  const handleTabChange = (newTab) => {
+    const currentIndex = tabs.indexOf(currentTab);
+    const newIndex = tabs.indexOf(newTab);
+    setDirection(newIndex > currentIndex ? 1 : -1);
+    setCurrentTab(newTab);
+    
+    // Use the enhanced scroll function
+    scrollToSection(newTab);
   };
 
   return (
     <div className="min-h-screen bg-white">
-      <Navbar />
+      <Navbar activeTab={currentTab} setActiveTab={handleTabChange} />
       
       {/* Hero Section - Always visible */}
-      <Hero onNavigateToTab={setActiveTab} />
+      <Hero onNavigateToTab={handleTabChange} />
       
       {/* Navigation Tabs */}
-      <NavigationTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+      <NavigationTabs activeTab={currentTab} setActiveTab={handleTabChange} />
       
       {/* Main Content with Animation */}
-      <main className="relative">
-        <AnimatePresence mode="wait">
-          {renderTabContent()}
+      <main className="relative overflow-hidden">
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.div
+            key={currentTab}
+            custom={direction}
+            variants={contentVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            className="section-container"
+          >
+            {currentTab === 'about' && (
+              <PaginatedAbout aboutData={mockAboutData} />
+            )}
+            {currentTab === 'projects' && (
+              <div className="min-h-screen bg-gray-50 py-20">
+                <div className="container mx-auto px-4">
+                  <div className="text-center mb-12">
+                    <motion.h2
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-4xl font-bold text-gray-900 mb-4"
+                    >
+                      Dự án của tôi
+                    </motion.h2>
+                    <motion.p
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 }}
+                      className="text-xl text-gray-600 max-w-2xl mx-auto"
+                    >
+                      Khám phá các dự án tôi đã thực hiện với nhiều công nghệ hiện đại
+                    </motion.p>
+                  </div>
+
+                  <PaginatedContent
+                    items={mockProjects}
+                    itemsPerPage={6}
+                    gridCols="grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                    renderItem={(project, index) => (
+                      <ProjectCard project={project} index={index} />
+                    )}
+                  />
+                </div>
+              </div>
+            )}
+            {currentTab === 'skills' && (
+              <PaginatedSkills skills={mockSkills} />
+            )}
+            {currentTab === 'contact' && (
+              <PaginatedContact contactInfo={mockContactInfo} />
+            )}
+          </motion.div>
         </AnimatePresence>
       </main>
       

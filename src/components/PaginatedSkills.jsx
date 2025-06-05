@@ -44,8 +44,7 @@ const SkillCard = ({ skillCategory, index }) => {
 };
 
 const PaginatedSkills = ({ skills }) => {
-  return (
-    <div className="min-h-screen bg-white py-20">
+  return (    <div id="skills" className="min-h-screen bg-white py-20">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <motion.h2

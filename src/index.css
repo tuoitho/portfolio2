@@ -3,10 +3,73 @@
 /* Custom styles */
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 80px; /* Match navbar height */
 }
 
 body {
   font-family: 'Inter', sans-serif;
+  overflow-y: scroll;
+}
+
+/* Enhanced section transitions */
+.section-container {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s ease-out forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Add smooth transition for all animations */
+.section-transition {
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Page transition slide animations */
+.slide-enter {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.slide-enter-active {
+  opacity: 1;
+  transform: translateX(0%);
+  transition: all 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slide-exit {
+  opacity: 1;
+  transform: translateX(0%);
+}
+
+.slide-exit-active {
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: all 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Section transition effect */
+main {
+  position: relative;
+}
+
+main > div {
+  position: relative;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+main > div.active {
+  z-index: 2;
 }
 
 /* Container centering - Override Tailwind's container */
@@ -102,5 +165,13 @@ section {
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.truncate-text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3; /* Adding standard property */
   overflow: hidden;
 }

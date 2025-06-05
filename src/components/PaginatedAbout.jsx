@@ -41,8 +41,7 @@ const HighlightItem = ({ highlight, index }) => {
 };
 
 const PaginatedAbout = ({ aboutData }) => {
-  return (
-    <div className="min-h-screen bg-gray-50 py-20">
+  return (    <div id="about" className="min-h-screen bg-gray-50 py-20">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
